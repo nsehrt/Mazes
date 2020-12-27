@@ -24,5 +24,8 @@
     <ClInclude Include="src\binarytree.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sidewinder.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

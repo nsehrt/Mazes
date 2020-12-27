@@ -1,15 +1,25 @@
 #include <iostream>
 
 #include "binarytree.h"
+#include "sidewinder.h"
 
 int main()
 {
     Randomizer rand{};
-    Grid grid(32, 32, rand);
+    int out = 10;
 
-    BinaryTree::use(grid, rand);
+    while(out == 10)
+    {
+        Grid grid(16, 16, rand);
+        //BinaryTree::use(grid, rand);
+        SideWinder::use(grid, rand);
 
-    std::cout << grid << std::endl;
+        std::cout << grid << std::endl;
+
+        out = std::getchar();
+    }
+
+
 
     return 0;
 }
