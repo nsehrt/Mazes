@@ -5,7 +5,7 @@
 int main()
 {
     Randomizer rand{};
-    Grid grid(4, 4);
+    Grid grid(32, 32, rand);
 
     BinaryTree::use(grid, rand);
 

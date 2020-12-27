@@ -28,7 +28,8 @@ class BinaryTree
             {
                 int index = rand.nextInt(static_cast<int>(neighbours.size()) - 1);
                 Cell* neighbour = neighbours[index];
-                cell.link(neighbour);
+                if(neighbour != nullptr)
+                    cell.link(neighbour);
             }
 
 
