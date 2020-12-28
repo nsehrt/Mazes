@@ -6,6 +6,13 @@
 #include "binarytree.h"
 #include "sidewinder.h"
 
+enum class MazeAlgorithm
+{
+    BinaryTree,
+    SideWinder,
+    COUNT
+};
+
 class Maze : public olc::PixelGameEngine
 {
     public:
@@ -21,6 +28,8 @@ class Maze : public olc::PixelGameEngine
 
     Randomizer rand{};
     std::unique_ptr<Grid> grid = nullptr;
+    MazeAlgorithm algorithm = MazeAlgorithm::BinaryTree;
+    bool drawDistances = false;
 };
 
 
@@ -41,9 +50,42 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     const int offsetX = 164;
     const int offsetY = 48;
 
-    if(GetMouse(0).bReleased)
+    //input
+
+    if(GetKey(olc::Key::ESCAPE).bPressed)
+    {
+        return false;
+    }
+
+    if(GetKey(olc::Key::SPACE).bPressed)
     {
         generateMaze();
+    }
+
+    if(GetKey(olc::Key::W).bPressed)
+    {
+        algorithm = static_cast<MazeAlgorithm>((static_cast<int>(algorithm) + 1) % static_cast<int>(MazeAlgorithm::COUNT));
+        generateMaze();
+    }
+    else if(GetKey(olc::Key::S).bPressed)
+    {
+        int t = static_cast<int>(algorithm) - 1;
+
+        if(t < 0)
+        {
+            algorithm = static_cast<MazeAlgorithm>(static_cast<int>(MazeAlgorithm::COUNT) - 1);
+        }
+        else
+        {
+            algorithm = static_cast<MazeAlgorithm>(t);
+        }
+
+        generateMaze();
+    }
+
+    if(GetKey(olc::Key::Q).bPressed)
+    {
+        drawDistances = !drawDistances;
     }
 
     /*draw*/
@@ -54,7 +96,7 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     FillRect({ offsetX, offsetY }, { grid->columns() * cellSize + 4 * halfBorder, cellBorder}, olc::RED);
     FillRect({ offsetX, offsetY }, { cellBorder, grid->rows() * cellSize + 4 * halfBorder}, olc::RED);
 
-
+    /*maze*/
 
     int px = 0;
     int py = 0;
@@ -79,6 +121,28 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         py++;
     }
 
+    //solver output
+    if(drawDistances)
+    {
+        auto& dist = grid->getDistances();
+
+        for(int i = 0; i < grid->rows(); i++)
+        {
+            for(int j = 0; j < grid->columns(); j++)
+            {
+                std::string t = std::to_string(dist.get((*grid)(j, i)));
+                DrawString({ j * cellSize + halfSize + offsetX, i * cellSize + halfSize + offsetY }, t, olc::WHITE, 1);
+            }
+        }
+    }
+
+    // text output
+    switch(algorithm)
+    {
+        case MazeAlgorithm::BinaryTree: DrawString({ 10,10 }, "BinaryTree", olc::WHITE, 2); break;
+        case MazeAlgorithm::SideWinder: DrawString({ 10,10 }, "SideWinder", olc::WHITE, 2); break;
+    }
+    
 
     return true;
 }
@@ -86,10 +150,21 @@ bool Maze::OnUserUpdate(float fElapsedTime)
 void Maze::generateMaze()
 {
     grid = std::make_unique<Grid>(16, 16, rand);
-    //BinaryTree::use(grid, rand);
-    SideWinder::use(*grid, rand);
 
-    std::cout << *grid << std::endl;
+    switch(algorithm)
+    {
+        case MazeAlgorithm::BinaryTree: BinaryTree::use(*grid, rand); break;
+        case MazeAlgorithm::SideWinder: SideWinder::use(*grid, rand); break;
+    }
+
+    //solve maze
+    Cell* start = (*grid)(0, 0);
+    Cell* goal = (*grid)(0, grid->rows()-1);
+    Distances distances = start->distances();
+    Distances path = distances.path(goal);
+    grid->setDistances(std::move(path));
+
+    //std::cout << *grid << std::endl;
 }
 
 

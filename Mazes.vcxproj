@@ -151,11 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\distances.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\binarytree.h" />
     <ClInclude Include="src\cell.h" />
+    <ClInclude Include="src\distances.h" />
     <ClInclude Include="src\extern\olcPixelGameEngine.h" />
     <ClInclude Include="src\grid.h" />
     <ClInclude Include="src\randomizer.h" />

@@ -21,6 +21,7 @@ class Grid
                 cells.emplace_back(j, i);
             }
         }
+
     }
 
     virtual void configureCells()
@@ -92,6 +93,16 @@ class Grid
         return cells;
     }
 
+    void setDistances(Distances d)
+    {
+        distances = d;
+    }
+
+    Distances& getDistances()
+    {
+        return distances;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, Grid& grid)
     {
         const std::string body = "   ";
@@ -131,7 +142,8 @@ class Grid
 
     private:
 
+    Randomizer& rand;
     int width, height;
     std::vector<Cell> cells;
-    Randomizer& rand;
+    Distances distances;
 };

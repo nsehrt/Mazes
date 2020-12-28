@@ -1,5 +1,6 @@
 #pragma once
 
+#include "distances.h"
 #include <vector>
 
 class Cell
@@ -64,6 +65,33 @@ class Cell
         if(w != nullptr) neighbours.push_back(w);
 
         return neighbours;
+    }
+
+    Distances distances()
+    {
+        Distances dist(this);
+        std::vector<Cell*> frontiers{ this };
+
+        while(!frontiers.empty())
+        {
+            std::vector<Cell*> newFrontiers{};
+
+            for(Cell* cell : frontiers)
+            {
+                for(Cell* link : cell->links)
+                {
+                    if(dist.exist(link))
+                        continue;
+
+                    dist.set(link, dist.get(cell) + 1);
+                    newFrontiers.push_back(link);
+                }
+            }
+
+            frontiers = newFrontiers;
+        }
+
+        return dist;
     }
 
     public:

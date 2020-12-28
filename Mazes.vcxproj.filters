@@ -13,6 +13,9 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\distances.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cell.h">
@@ -32,6 +35,9 @@
     </ClInclude>
     <ClInclude Include="src\extern\olcPixelGameEngine.h">
       <Filter>Source Files\extern</Filter>
+    </ClInclude>
+    <ClInclude Include="src\distances.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
