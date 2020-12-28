@@ -22,3 +22,20 @@ Distances Distances::path(Cell* goal)
 
     return breadcrumbs;
 }
+
+std::pair<Cell*, int> Distances::maxPath()
+{
+    int maxDistance = 0;
+    Cell* maxCell = root;
+
+    for(const auto& [cell, distance] : distances)
+    {
+        if(distance > maxDistance)
+        {
+            maxCell = cell;
+            maxDistance = distance;
+        }
+    }
+
+    return{ maxCell, maxDistance };
+}

@@ -32,6 +32,22 @@ class Distances
     }
 
     Distances path(Cell* goal);
+    std::pair<Cell*, int> maxPath();
+
+    int maxValue()
+    {
+        int max = 0;
+
+        for(auto& [cell, dist] : distances)
+        {
+            if(dist > max)
+            {
+                max = dist;
+            }
+        }
+
+        return max;
+    }
 
     private:
     Cell* root;

@@ -33,6 +33,7 @@ class Maze : public olc::PixelGameEngine
     std::pair<int, int> startPos{ 0,0 };
     std::pair<int, int> goalPos{ 0,15 };
     bool drawDistances = false;
+    bool showOnlyPath = false;
 };
 
 
@@ -86,9 +87,30 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         generateMaze();
     }
 
+    //set start, goal to maximal length
+    if(GetKey(olc::Key::E).bPressed)
+    {
+        Cell* startCell = (*grid)(0, 0);
+        Distances d = startCell->distances();
+        auto [newStart, maxDistance] = d.maxPath();
+        Distances newD = newStart->distances();
+        auto [goalCell, maxDistanceGoal] = newD.maxPath();
+
+        startPos = newStart->getPosition();
+        goalPos = goalCell->getPosition();
+        grid->setDistances(newD.path(goalCell));
+        solveMaze();
+    }
+
     if(GetKey(olc::Key::Q).bPressed)
     {
         drawDistances = !drawDistances;
+    }
+
+    if(GetKey(olc::Key::A).bPressed)
+    {
+        showOnlyPath = !showOnlyPath;
+        solveMaze();
     }
 
     const int selectedX = (GetMouseX() - offsetX) / cellSize;
@@ -120,18 +142,43 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     FillRect({ offsetX, offsetY }, { grid->columns() * cellSize + 4 * halfBorder, cellBorder}, olc::RED);
     FillRect({ offsetX, offsetY }, { cellBorder, grid->rows() * cellSize + 4 * halfBorder}, olc::RED);
 
+    /*background*/
+    int px = 0;
+    int py = 0;
+
+    Distances& cDistances = grid->getDistances();
+    const int maxDistValue = cDistances.maxValue();
+
+    for(const auto& row : grid->getEachRow())
+    {
+        for(const auto cell : row)
+        {
+            float intensity = static_cast<float>(maxDistValue - cDistances.get(cell)) / static_cast<float>(maxDistValue);
+            int dark = static_cast<int>(255.0f * intensity);
+            int bright = 128 + static_cast<int>(127 * intensity);
+            FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
+                     { static_cast<std::uint8_t>(dark), 
+                     static_cast<std::uint8_t>(dark),
+                     static_cast<std::uint8_t>(bright)
+                     });
+            px++;
+        }
+        px = 0;
+        py++;
+    }
+
     /*start/goal*/
 
-    FillRect({ startPos.first * cellSize + halfBorder + offsetX, startPos.second * cellSize + halfBorder + offsetY },
+    FillRect({ startPos.first * cellSize + cellBorder + offsetX, startPos.second * cellSize + cellBorder + offsetY },
              { cellSize, cellSize }, olc::GREEN);
 
-    FillRect({ goalPos.first * cellSize + halfBorder + offsetX, goalPos.second * cellSize + halfBorder + offsetY },
+    FillRect({ goalPos.first * cellSize + cellBorder + offsetX, goalPos.second * cellSize + cellBorder + offsetY },
              { cellSize, cellSize }, olc::DARK_RED);
 
     /*maze*/
 
-    int px = 0;
-    int py = 0;
+    px = 0;
+    py = 0;
 
     for(const auto& row : grid->getEachRow())
     {
@@ -200,8 +247,15 @@ void Maze::solveMaze()
     Cell* start = (*grid)(startPos.first, startPos.second);
     Cell* goal = (*grid)(goalPos.first, goalPos.second);
     Distances distances = start->distances();
-    Distances path = distances.path(goal);
-    grid->setDistances(std::move(path));
+    if(showOnlyPath)
+    {
+        Distances path = distances.path(goal);
+        grid->setDistances(std::move(path));
+    }
+    else
+    {
+        grid->setDistances(std::move(distances));
+    }
 
 }
 
