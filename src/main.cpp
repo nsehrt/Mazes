@@ -25,10 +25,13 @@ class Maze : public olc::PixelGameEngine
     bool OnUserCreate() override;
     bool OnUserUpdate(float fElapsedTime) override;
     void generateMaze();
+    void solveMaze();
 
     Randomizer rand{};
     std::unique_ptr<Grid> grid = nullptr;
     MazeAlgorithm algorithm = MazeAlgorithm::BinaryTree;
+    std::pair<int, int> startPos{ 0,0 };
+    std::pair<int, int> goalPos{ 0,15 };
     bool drawDistances = false;
 };
 
@@ -88,6 +91,27 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         drawDistances = !drawDistances;
     }
 
+    const int selectedX = (GetMouseX() - offsetX) / cellSize;
+    const int selectedY = (GetMouseY() - offsetY) / cellSize;
+
+    if(GetMouse(0).bReleased)
+    {
+        if(selectedX >= 0 && selectedX < grid->columns() && selectedY >= 0 && selectedY < grid->rows())
+        {
+            if(!GetKey(olc::SHIFT).bHeld)
+            {
+                goalPos = std::make_pair(selectedX, selectedY);
+                solveMaze();
+            }
+            else
+            {
+                startPos = std::make_pair(selectedX, selectedY);
+                solveMaze();
+            }
+        }
+
+    }
+
     /*draw*/
     Clear(olc::BLACK);
 
@@ -95,6 +119,14 @@ bool Maze::OnUserUpdate(float fElapsedTime)
 
     FillRect({ offsetX, offsetY }, { grid->columns() * cellSize + 4 * halfBorder, cellBorder}, olc::RED);
     FillRect({ offsetX, offsetY }, { cellBorder, grid->rows() * cellSize + 4 * halfBorder}, olc::RED);
+
+    /*start/goal*/
+
+    FillRect({ startPos.first * cellSize + halfBorder + offsetX, startPos.second * cellSize + halfBorder + offsetY },
+             { cellSize, cellSize }, olc::GREEN);
+
+    FillRect({ goalPos.first * cellSize + halfBorder + offsetX, goalPos.second * cellSize + halfBorder + offsetY },
+             { cellSize, cellSize }, olc::DARK_RED);
 
     /*maze*/
 
@@ -157,16 +189,21 @@ void Maze::generateMaze()
         case MazeAlgorithm::SideWinder: SideWinder::use(*grid, rand); break;
     }
 
+    solveMaze();
+    //std::cout << *grid << std::endl;
+}
+
+void Maze::solveMaze()
+{
+
     //solve maze
-    Cell* start = (*grid)(0, 0);
-    Cell* goal = (*grid)(0, grid->rows()-1);
+    Cell* start = (*grid)(startPos.first, startPos.second);
+    Cell* goal = (*grid)(goalPos.first, goalPos.second);
     Distances distances = start->distances();
     Distances path = distances.path(goal);
     grid->setDistances(std::move(path));
 
-    //std::cout << *grid << std::endl;
 }
-
 
 int main()
 {
