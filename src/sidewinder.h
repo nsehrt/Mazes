@@ -3,10 +3,8 @@
 #include "grid.h"
 #include "randomizer.h"
 
-class SideWinder
+namespace SideWinder
 {
-    public:
-    explicit SideWinder() = default;
 
     static void use(Grid& grid, Randomizer& rand)
     {
@@ -45,5 +43,4 @@ class SideWinder
 
     }
 
-    private:
 };

@@ -1,5 +1,5 @@
 #pragma once
-
+#undef max
 #include <random>
 #include <memory>
 #include <numeric>

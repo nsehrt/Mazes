@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\extern">
+      <UniqueIdentifier>{f9ad8172-df9c-4e54-ba67-2de06e044e67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -26,6 +29,9 @@
     </ClInclude>
     <ClInclude Include="src\sidewinder.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\extern\olcPixelGameEngine.h">
+      <Filter>Source Files\extern</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

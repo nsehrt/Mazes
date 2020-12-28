@@ -3,10 +3,8 @@
 #include "grid.h"
 #include "randomizer.h"
 
-class BinaryTree
+namespace BinaryTree
 {
-    public:
-    explicit BinaryTree() = default;
 
     static void use(Grid& grid, Randomizer& rand)
     {
@@ -35,8 +33,5 @@ class BinaryTree
 
         }
     }
-
-    private:
-
 
 };
