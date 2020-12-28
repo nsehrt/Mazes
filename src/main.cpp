@@ -122,13 +122,20 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         {
             if(!GetKey(olc::SHIFT).bHeld)
             {
-                goalPos = std::make_pair(selectedX, selectedY);
-                solveMaze();
+                if(startPos != std::make_pair(selectedX, selectedY))
+                {
+                    goalPos = std::make_pair(selectedX, selectedY);
+                    solveMaze();
+                }
+
             }
             else
             {
-                startPos = std::make_pair(selectedX, selectedY);
-                solveMaze();
+                if(goalPos != std::make_pair(selectedX, selectedY))
+                {
+                    startPos = std::make_pair(selectedX, selectedY);
+                    solveMaze();
+                }
             }
         }
 
@@ -157,9 +164,10 @@ bool Maze::OnUserUpdate(float fElapsedTime)
             int dark = static_cast<int>(255.0f * intensity);
             int bright = 128 + static_cast<int>(127 * intensity);
             FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
-                     { static_cast<std::uint8_t>(dark), 
-                     static_cast<std::uint8_t>(dark),
-                     static_cast<std::uint8_t>(bright)
+                     { 
+                        static_cast<std::uint8_t>(dark),
+                        static_cast<std::uint8_t>(bright),
+                        static_cast<std::uint8_t>(dark)
                      });
             px++;
         }
