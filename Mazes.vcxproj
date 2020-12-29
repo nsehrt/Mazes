@@ -159,6 +159,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\aldousbroder.h" />
     <ClInclude Include="src\binarytree.h" />
     <ClInclude Include="src\cell.h" />
     <ClInclude Include="src\distances.h" />

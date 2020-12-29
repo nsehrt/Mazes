@@ -5,11 +5,13 @@
 #include <iostream>
 #include "binarytree.h"
 #include "sidewinder.h"
+#include "aldousbroder.h"
 
 enum class MazeAlgorithm
 {
     BinaryTree,
     SideWinder,
+    AldousBroder,
     COUNT
 };
 
@@ -161,8 +163,8 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         for(const auto cell : row)
         {
             float intensity = static_cast<float>(maxDistValue - cDistances.get(cell)) / static_cast<float>(maxDistValue);
-            int dark = static_cast<int>(255.0f * intensity);
-            int bright = 128 + static_cast<int>(127 * intensity);
+            int dark = static_cast<int>(255.0f * (std::clamp<float>(intensity - 0.15f, 0.0f,1.0f)));
+            int bright = 128 + static_cast<int>(127 * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
             FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
                      { 
                         static_cast<std::uint8_t>(dark),
@@ -228,6 +230,7 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     {
         case MazeAlgorithm::BinaryTree: DrawString({ 10,10 }, "BinaryTree", olc::WHITE, 2); break;
         case MazeAlgorithm::SideWinder: DrawString({ 10,10 }, "SideWinder", olc::WHITE, 2); break;
+        case MazeAlgorithm::AldousBroder: DrawString({ 10,10 }, "Aldous-Broder", olc::WHITE, 2); break;
     }
     
 
@@ -242,6 +245,7 @@ void Maze::generateMaze()
     {
         case MazeAlgorithm::BinaryTree: BinaryTree::use(*grid, rand); break;
         case MazeAlgorithm::SideWinder: SideWinder::use(*grid, rand); break;
+        case MazeAlgorithm::AldousBroder: AldousBroder::use(*grid, rand); break;
     }
 
     solveMaze();
