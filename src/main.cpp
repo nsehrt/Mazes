@@ -325,7 +325,7 @@ void Maze::generateMaze()
         case MazeAlgorithm::RecursiveBacktracker: RecursiveBacktracker::use(*grid, rand); break;
         case MazeAlgorithm::TruePrims: TruePrims::use(*grid, rand); break;
             // the lambda implements a mix between random cell and last cell
-        case MazeAlgorithm::GrowingTree: GrowingTree::use(*grid, rand, [&](std::vector<Cell*> active)
+        case MazeAlgorithm::GrowingTree: GrowingTree::use(*grid, rand, [&](auto active)
                                                           {
                                                               if(rand.nextInt(1) == 1)
                                                               {
