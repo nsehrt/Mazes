@@ -103,6 +103,19 @@ class Grid
         return distances;
     }
 
+    std::vector<Cell*> deadends()
+    {
+        std::vector<Cell*> d{};
+
+        for(auto& cell : cells)
+        {
+            if(cell.getLinks().size() == 1)
+                d.push_back(&cell);
+        }
+
+        return d;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, Grid& grid)
     {
         const std::string body = "   ";

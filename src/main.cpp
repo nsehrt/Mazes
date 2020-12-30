@@ -8,6 +8,7 @@
 #include "aldousbroder.h"
 #include "wilson.h"
 #include "huntkill.h"
+#include "recursivebacktracker.h"
 
 enum class MazeAlgorithm
 {
@@ -16,6 +17,7 @@ enum class MazeAlgorithm
     AldousBroder,
     Wilson,
     HuntAndKill,
+    RecursiveBacktracker,
     COUNT
 };
 
@@ -40,6 +42,7 @@ class Maze : public olc::PixelGameEngine
     std::pair<int, int> goalPos{ 0,15 };
     bool drawDistances = false;
     bool showOnlyPath = false;
+    bool drawPolarGrid = false;
 };
 
 
@@ -113,6 +116,11 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         drawDistances = !drawDistances;
     }
 
+    if(GetKey(olc::Key::D).bPressed)
+    {
+        drawPolarGrid = !drawPolarGrid;
+    }
+
     if(GetKey(olc::Key::A).bPressed)
     {
         showOnlyPath = !showOnlyPath;
@@ -150,84 +158,97 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     /*draw*/
     Clear(olc::BLACK);
 
-    /*border*/
 
-    FillRect({ offsetX, offsetY }, { grid->columns() * cellSize + 4 * halfBorder, cellBorder}, olc::RED);
-    FillRect({ offsetX, offsetY }, { cellBorder, grid->rows() * cellSize + 4 * halfBorder}, olc::RED);
-
-    /*background*/
-    int px = 0;
-    int py = 0;
-
-    Distances& cDistances = grid->getDistances();
-    const int maxDistValue = cDistances.maxValue();
-
-    for(const auto& row : grid->getEachRow())
+    //draw normal grid
+    if(!drawPolarGrid)
     {
-        for(const auto cell : row)
+        /*border*/
+
+        FillRect({ offsetX, offsetY }, { grid->columns() * cellSize + 4 * halfBorder, cellBorder }, olc::RED);
+        FillRect({ offsetX, offsetY }, { cellBorder, grid->rows() * cellSize + 4 * halfBorder }, olc::RED);
+
+        /*background*/
+        int px = 0;
+        int py = 0;
+
+        Distances& cDistances = grid->getDistances();
+        const int maxDistValue = cDistances.maxValue();
+
+        for(const auto& row : grid->getEachRow())
         {
-            float intensity = static_cast<float>(maxDistValue - cDistances.get(cell)) / static_cast<float>(maxDistValue);
-            int dark = static_cast<int>(255.0f * (std::clamp<float>(intensity - 0.15f, 0.0f,1.0f)));
-            int bright = 128 + static_cast<int>(127 * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
-            FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
-                     { 
+            for(const auto cell : row)
+            {
+                float intensity = static_cast<float>(maxDistValue - cDistances.get(cell)) / static_cast<float>(maxDistValue);
+                int dark = static_cast<int>(255.0f * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
+                int bright = 128 + static_cast<int>(127 * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
+
+                FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
+                     {
                         static_cast<std::uint8_t>(dark),
                         static_cast<std::uint8_t>(bright),
                         static_cast<std::uint8_t>(dark)
                      });
-            px++;
+                px++;
+            }
+            px = 0;
+            py++;
         }
+
+        /*start/goal*/
+
+        FillRect({ startPos.first * cellSize + cellBorder + offsetX, startPos.second * cellSize + cellBorder + offsetY },
+                 { cellSize, cellSize }, olc::GREEN);
+
+        FillRect({ goalPos.first * cellSize + cellBorder + offsetX, goalPos.second * cellSize + cellBorder + offsetY },
+                 { cellSize, cellSize }, olc::DARK_RED);
+
+        /*maze*/
+
         px = 0;
-        py++;
-    }
+        py = 0;
 
-    /*start/goal*/
-
-    FillRect({ startPos.first * cellSize + cellBorder + offsetX, startPos.second * cellSize + cellBorder + offsetY },
-             { cellSize, cellSize }, olc::GREEN);
-
-    FillRect({ goalPos.first * cellSize + cellBorder + offsetX, goalPos.second * cellSize + cellBorder + offsetY },
-             { cellSize, cellSize }, olc::DARK_RED);
-
-    /*maze*/
-
-    px = 0;
-    py = 0;
-
-    for(const auto& row : grid->getEachRow())
-    {
-        for(const auto cell : row)
+        for(const auto& row : grid->getEachRow())
         {
-            if(!cell->isLinked(cell->e))
+            for(const auto cell : row)
             {
-                FillRect({ px * cellSize + cellSize - halfBorder + cellBorder + offsetX, py * cellSize - halfBorder + cellBorder + offsetY },
-                         {cellBorder, cellSize + cellBorder}, olc::RED);
+                if(!cell->isLinked(cell->e))
+                {
+                    FillRect({ px * cellSize + cellSize - halfBorder + cellBorder + offsetX, py * cellSize - halfBorder + cellBorder + offsetY },
+                             { cellBorder, cellSize + cellBorder }, olc::RED);
+                }
+                if(!cell->isLinked(cell->s))
+                {
+                    FillRect({ px * cellSize - halfBorder + cellBorder + offsetX, py * cellSize + cellSize - halfBorder + cellBorder + offsetY },
+                             { cellSize + cellBorder, cellBorder }, olc::RED);
+                }
+                px++;
             }
-            if(!cell->isLinked(cell->s))
-            {
-                FillRect({ px * cellSize - halfBorder + cellBorder + offsetX, py * cellSize + cellSize - halfBorder + cellBorder + offsetY },
-                         { cellSize + cellBorder, cellBorder }, olc::RED);
-            }
-            px++;
+            px = 0;
+            py++;
         }
-        px = 0;
-        py++;
-    }
 
-    //solver output
-    if(drawDistances)
-    {
-        auto& dist = grid->getDistances();
-
-        for(int i = 0; i < grid->rows(); i++)
+        //solver output
+        if(drawDistances)
         {
-            for(int j = 0; j < grid->columns(); j++)
+            auto& dist = grid->getDistances();
+
+            for(int i = 0; i < grid->rows(); i++)
             {
-                std::string t = std::to_string(dist.get((*grid)(j, i)));
-                DrawString({ j * cellSize + halfSize + offsetX, i * cellSize + halfSize + offsetY }, t, olc::WHITE, 1);
+                for(int j = 0; j < grid->columns(); j++)
+                {
+                    std::string t = std::to_string(dist.get((*grid)(j, i)));
+                    DrawString({ j * cellSize + halfSize + offsetX, i * cellSize + halfSize + offsetY }, t, olc::WHITE, 1);
+                }
             }
         }
+
     }
+    //draw polar grid
+    else
+    {
+
+    }
+
 
     // text output
     switch(algorithm)
@@ -237,8 +258,14 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         case MazeAlgorithm::AldousBroder: DrawString({ 10,10 }, "Aldous-Broder", olc::WHITE, 2); break;
         case MazeAlgorithm::Wilson: DrawString({ 10,10 }, "Wilson", olc::WHITE, 2); break;
         case MazeAlgorithm::HuntAndKill: DrawString({ 10,10 }, "Hunt&Kill", olc::WHITE, 2); break;
+        case MazeAlgorithm::RecursiveBacktracker: DrawString({ 10,10 }, "RecursiveBacktracker", olc::WHITE, 2); break;
     }
-    
+ 
+    int deadends = static_cast<int>(grid->deadends().size());
+    int dPercent = static_cast<int>(deadends / static_cast<float>(grid->size()) * 100.0f);
+    std::string deadEndText = "Deadends: " + std::to_string(deadends) + " (" + std::to_string(dPercent) + "%)";
+
+    DrawString({ 10,30 }, deadEndText, olc::WHITE, 2);
 
     return true;
 }
@@ -254,6 +281,7 @@ void Maze::generateMaze()
         case MazeAlgorithm::AldousBroder: AldousBroder::use(*grid, rand); break;
         case MazeAlgorithm::Wilson: AldousBroder::use(*grid, rand); break; //!!!
         case MazeAlgorithm::HuntAndKill: HuntKill::use(*grid, rand); break;
+        case MazeAlgorithm::RecursiveBacktracker: RecursiveBacktracker::use(*grid, rand); break;
     }
 
     solveMaze();

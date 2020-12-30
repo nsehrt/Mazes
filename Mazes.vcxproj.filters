@@ -48,5 +48,8 @@
     <ClInclude Include="src\huntkill.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\recursivebacktracker.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

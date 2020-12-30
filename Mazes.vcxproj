@@ -167,6 +167,7 @@
     <ClInclude Include="src\grid.h" />
     <ClInclude Include="src\huntkill.h" />
     <ClInclude Include="src\randomizer.h" />
+    <ClInclude Include="src\recursivebacktracker.h" />
     <ClInclude Include="src\sidewinder.h" />
     <ClInclude Include="src\wilson.h" />
   </ItemGroup>

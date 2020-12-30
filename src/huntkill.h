@@ -10,7 +10,7 @@ namespace HuntKill
     {
 
         Cell* current = &grid.getRandomCell();
-        
+
         while(current != nullptr)
         {
             //how many neighbours are not visited
@@ -65,8 +65,5 @@ namespace HuntKill
 
         }
 
-        
-
     }
-
-};
+}
