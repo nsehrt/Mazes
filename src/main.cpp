@@ -324,7 +324,19 @@ void Maze::generateMaze()
         case MazeAlgorithm::HuntAndKill: HuntKill::use(*grid, rand); break;
         case MazeAlgorithm::RecursiveBacktracker: RecursiveBacktracker::use(*grid, rand); break;
         case MazeAlgorithm::TruePrims: TruePrims::use(*grid, rand); break;
-        case MazeAlgorithm::GrowingTree: GrowingTree::use(*grid, rand); break;
+            // the lambda implements a mix between random cell and last cell
+        case MazeAlgorithm::GrowingTree: GrowingTree::use(*grid, rand, [&](std::vector<Cell*> active)
+                                                          {
+                                                              if(rand.nextInt(1) == 1)
+                                                              {
+                                                                  return active.back();
+                                                              }
+                                                              else
+                                                              {
+                                                                  int randIndex = rand.nextInt(static_cast<int>(active.size()) - 1);
+                                                                  return active[randIndex];
+                                                              }
+                                                          }); break;
     }
 
     grid->braid(braidRatio);

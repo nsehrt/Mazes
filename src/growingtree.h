@@ -6,8 +6,8 @@
 
 namespace GrowingTree
 {
-
-    static void use(Grid& grid, Randomizer& rand)
+    template<typename Func>
+    static void use(Grid& grid, Randomizer& rand, Func f)
     {
         std::vector<Cell*> active{};
         std::unordered_map<Cell*, int> costs{};
@@ -23,19 +23,8 @@ namespace GrowingTree
 
         while(!active.empty())
         {
-            //mix
-            Cell* cell = [&]()
-            {
-                if(rand.nextInt(1) == 1)
-                {
-                    return active.back();
-                }
-                else
-                {
-                    int randIndex = rand.nextInt(static_cast<int>(active.size()) - 1);
-                    return active[randIndex];
-                }
-            }();
+            //use lambda to select cell
+            Cell* cell = f(active);
 
             //neighbours
             std::vector<Cell*> availableNeighbours{};
