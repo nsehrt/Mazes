@@ -41,6 +41,7 @@ class Maze : public olc::PixelGameEngine
     bool drawDistances = false;
     bool showOnlyPath = false;
     bool drawPolarGrid = false;
+    float braidRatio = 0.0f;
 };
 
 
@@ -125,6 +126,18 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         solveMaze();
     }
 
+    if(GetKey(olc::Key::R).bPressed)
+    {
+        braidRatio -= 0.1f;
+        if(braidRatio < 0.0f) braidRatio = 0.0f;
+    }
+
+    if(GetKey(olc::Key::F).bPressed)
+    {
+        braidRatio += 0.1f;
+        if(braidRatio > 1.0f) braidRatio = 1.0f;
+    }
+
     const int selectedX = (GetMouseX() - offsetX) / cellSize;
     const int selectedY = (GetMouseY() - offsetY) / cellSize;
 
@@ -132,23 +145,34 @@ bool Maze::OnUserUpdate(float fElapsedTime)
     {
         if(selectedX >= 0 && selectedX < grid->columns() && selectedY >= 0 && selectedY < grid->rows())
         {
-            if(!GetKey(olc::SHIFT).bHeld)
-            {
-                if(startPos != std::make_pair(selectedX, selectedY))
-                {
-                    goalPos = std::make_pair(selectedX, selectedY);
-                    solveMaze();
-                }
-
-            }
-            else
+            if(GetKey(olc::SHIFT).bHeld)
             {
                 if(goalPos != std::make_pair(selectedX, selectedY))
                 {
                     startPos = std::make_pair(selectedX, selectedY);
                     solveMaze();
                 }
+
             }
+            else if(GetKey(olc::CTRL).bHeld)
+            {
+                if(goalPos != std::make_pair(selectedX, selectedY) &&
+                   startPos != std::make_pair(selectedX, selectedY))
+                {
+                    (*grid)(selectedX, selectedY)->weight = (*grid)(selectedX, selectedY)->weight == 1 ? 50 : 1;
+                    solveMaze();
+                }
+            }
+            else
+            {
+                if(startPos != std::make_pair(selectedX, selectedY))
+                {
+                    goalPos = std::make_pair(selectedX, selectedY);
+                    solveMaze();
+                }
+            }
+
+
         }
 
     }
@@ -180,12 +204,24 @@ bool Maze::OnUserUpdate(float fElapsedTime)
                 int dark = static_cast<int>(255.0f * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
                 int bright = 128 + static_cast<int>(127 * (std::clamp<float>(intensity - 0.15f, 0.0f, 1.0f)));
 
-                FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
+
+                if(cell->weight == 1)
+                {
+                    FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
                      {
                         static_cast<std::uint8_t>(dark),
                         static_cast<std::uint8_t>(bright),
                         static_cast<std::uint8_t>(dark)
                      });
+                }
+                else
+                {
+                    FillRect({ px * cellSize + cellBorder + offsetX, py * cellSize + cellBorder + offsetY }, { cellSize, cellSize },
+                     {
+                        200,50,50
+                     });
+                }
+
                 px++;
             }
             px = 0;
@@ -264,6 +300,9 @@ bool Maze::OnUserUpdate(float fElapsedTime)
 
     DrawString({ 10,30 }, deadEndText, olc::WHITE, 2);
 
+    std::string braidTest = "Braid: " + std::to_string(braidRatio);
+    DrawString({ 10,50 }, braidTest, olc::WHITE, 2);
+
     return true;
 }
 
@@ -279,6 +318,8 @@ void Maze::generateMaze()
         case MazeAlgorithm::HuntAndKill: HuntKill::use(*grid, rand); break;
         case MazeAlgorithm::RecursiveBacktracker: RecursiveBacktracker::use(*grid, rand); break;
     }
+
+    grid->braid(braidRatio);
 
     solveMaze();
     std::cout << *grid << std::endl;

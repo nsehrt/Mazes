@@ -2,6 +2,7 @@
 
 #include "distances.h"
 #include <vector>
+#include <algorithm>
 
 class Cell
 {
@@ -69,34 +70,60 @@ class Cell
 
     Distances distances()
     {
-        Distances dist(this);
+        Distances weights(this);
+        std::vector<Cell*> pending{ this };
+
         std::vector<Cell*> frontiers{ this };
 
-        while(!frontiers.empty())
+        while(!pending.empty())
         {
-            std::vector<Cell*> newFrontiers{};
+            std::sort(pending.begin(), pending.end(), [](const Cell* a, const Cell* b)
+                                         {
+                                             return a->weight > b->weight;
+                                         });
+            Cell* cell = pending[0];
+            pending.erase(std::remove(pending.begin(), pending.end(), cell), pending.end());
 
-            for(Cell* cell : frontiers)
+            const auto& neighbours = cell->getLinks();
+
+            for(Cell* c : neighbours)
             {
-                for(Cell* link : cell->links)
-                {
-                    if(dist.exist(link))
-                        continue;
+                int totalWeight = weights.get(cell) + c->weight;
 
-                    dist.set(link, dist.get(cell) + 1);
-                    newFrontiers.push_back(link);
+                if(weights.get(c) == -1 || totalWeight < weights.get(c))
+                {
+                    pending.push_back(c);
+                    weights.set(c, totalWeight);
                 }
             }
-
-            frontiers = newFrontiers;
         }
 
-        return dist;
+        //while(!frontiers.empty())
+        //{
+        //    std::vector<Cell*> newFrontiers{};
+
+        //    for(Cell* cell : frontiers)
+        //    {
+        //        for(Cell* link : cell->links)
+        //        {
+        //            if(weights.exist(link))
+        //                continue;
+
+        //            dist.set(link, dist.get(cell) + 1);
+        //            newFrontiers.push_back(link);
+        //        }
+        //    }
+
+        //    frontiers = newFrontiers;
+        //}
+
+        return weights;
     }
 
     public:
 
     Cell* n, * e, * s, * w;
+    int weight = 1;
 
     private:
 

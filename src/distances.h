@@ -18,6 +18,7 @@ class Distances
 
     int get(Cell* cell)
     {
+        if(distances.find(cell) == distances.end()) return -1;
         return distances[cell];
     }
 

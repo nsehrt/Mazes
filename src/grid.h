@@ -116,6 +116,49 @@ class Grid
         return d;
     }
 
+    void braid(float p = 1.0f)
+    {
+        if(p <= 0.0f) return;
+
+        for(Cell* cell : deadends())
+        {
+            if(rand.nextNormFloat() > p || cell->getLinks().size() != 1)
+            {
+                continue;
+            }
+
+            const auto neighbours = cell->getNeighbours();
+            std::vector<Cell*> vNeighbours{};
+            std::vector<Cell*> best{};
+
+            for(Cell* n : neighbours)
+            {
+                if(!cell->isLinked(n))
+                {
+                    vNeighbours.push_back(n);
+                }
+            }
+
+            for(Cell* n : vNeighbours)
+            {
+                if(n->getLinks().size() == 1)
+                {
+                    best.push_back(n);
+                }
+            }
+
+            if(best.empty())
+            {
+                best = vNeighbours;
+            }
+
+            int randIndex = rand.nextInt(static_cast<int>(best.size()) - 1);
+            Cell* neighbour = best[randIndex];
+            cell->link(neighbour);
+
+        }
+    }
+
     friend std::ostream& operator<<(std::ostream& os, Grid& grid)
     {
         const std::string body = "   ";
