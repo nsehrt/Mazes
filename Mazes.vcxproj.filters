@@ -48,5 +48,11 @@
     <ClInclude Include="src\recursivebacktracker.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\trueprims.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\growingtree.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

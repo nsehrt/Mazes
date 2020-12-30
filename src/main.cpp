@@ -8,6 +8,8 @@
 #include "aldousbroder.h"
 #include "huntkill.h"
 #include "recursivebacktracker.h"
+#include "trueprims.h"
+#include "growingtree.h"
 
 enum class MazeAlgorithm
 {
@@ -16,6 +18,8 @@ enum class MazeAlgorithm
     AldousBroder,
     HuntAndKill,
     RecursiveBacktracker,
+    TruePrims,
+    GrowingTree,
     COUNT
 };
 
@@ -126,13 +130,13 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         solveMaze();
     }
 
-    if(GetKey(olc::Key::R).bPressed)
+    if(GetKey(olc::Key::F).bPressed)
     {
         braidRatio -= 0.1f;
         if(braidRatio < 0.0f) braidRatio = 0.0f;
     }
 
-    if(GetKey(olc::Key::F).bPressed)
+    if(GetKey(olc::Key::R).bPressed)
     {
         braidRatio += 0.1f;
         if(braidRatio > 1.0f) braidRatio = 1.0f;
@@ -292,6 +296,8 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         case MazeAlgorithm::AldousBroder: DrawString({ 10,10 }, "Aldous-Broder", olc::WHITE, 2); break;
         case MazeAlgorithm::HuntAndKill: DrawString({ 10,10 }, "Hunt&Kill", olc::WHITE, 2); break;
         case MazeAlgorithm::RecursiveBacktracker: DrawString({ 10,10 }, "RecursiveBacktracker", olc::WHITE, 2); break;
+        case MazeAlgorithm::TruePrims: DrawString({ 10,10 }, "TruePrims", olc::WHITE, 2); break;
+        case MazeAlgorithm::GrowingTree: DrawString({ 10,10 }, "GrowingTree", olc::WHITE, 2); break;
     }
  
     int deadends = static_cast<int>(grid->deadends().size());
@@ -317,6 +323,8 @@ void Maze::generateMaze()
         case MazeAlgorithm::AldousBroder: AldousBroder::use(*grid, rand); break;
         case MazeAlgorithm::HuntAndKill: HuntKill::use(*grid, rand); break;
         case MazeAlgorithm::RecursiveBacktracker: RecursiveBacktracker::use(*grid, rand); break;
+        case MazeAlgorithm::TruePrims: TruePrims::use(*grid, rand); break;
+        case MazeAlgorithm::GrowingTree: GrowingTree::use(*grid, rand); break;
     }
 
     grid->braid(braidRatio);

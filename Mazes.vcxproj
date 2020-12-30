@@ -165,10 +165,12 @@
     <ClInclude Include="src\distances.h" />
     <ClInclude Include="src\extern\olcPixelGameEngine.h" />
     <ClInclude Include="src\grid.h" />
+    <ClInclude Include="src\growingtree.h" />
     <ClInclude Include="src\huntkill.h" />
     <ClInclude Include="src\randomizer.h" />
     <ClInclude Include="src\recursivebacktracker.h" />
     <ClInclude Include="src\sidewinder.h" />
+    <ClInclude Include="src\trueprims.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
