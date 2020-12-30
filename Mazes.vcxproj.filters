@@ -42,5 +42,11 @@
     <ClInclude Include="src\aldousbroder.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\wilson.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\huntkill.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

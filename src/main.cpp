@@ -6,12 +6,16 @@
 #include "binarytree.h"
 #include "sidewinder.h"
 #include "aldousbroder.h"
+#include "wilson.h"
+#include "huntkill.h"
 
 enum class MazeAlgorithm
 {
     BinaryTree,
     SideWinder,
     AldousBroder,
+    Wilson,
+    HuntAndKill,
     COUNT
 };
 
@@ -231,6 +235,8 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         case MazeAlgorithm::BinaryTree: DrawString({ 10,10 }, "BinaryTree", olc::WHITE, 2); break;
         case MazeAlgorithm::SideWinder: DrawString({ 10,10 }, "SideWinder", olc::WHITE, 2); break;
         case MazeAlgorithm::AldousBroder: DrawString({ 10,10 }, "Aldous-Broder", olc::WHITE, 2); break;
+        case MazeAlgorithm::Wilson: DrawString({ 10,10 }, "Wilson", olc::WHITE, 2); break;
+        case MazeAlgorithm::HuntAndKill: DrawString({ 10,10 }, "Hunt&Kill", olc::WHITE, 2); break;
     }
     
 
@@ -246,10 +252,12 @@ void Maze::generateMaze()
         case MazeAlgorithm::BinaryTree: BinaryTree::use(*grid, rand); break;
         case MazeAlgorithm::SideWinder: SideWinder::use(*grid, rand); break;
         case MazeAlgorithm::AldousBroder: AldousBroder::use(*grid, rand); break;
+        case MazeAlgorithm::Wilson: AldousBroder::use(*grid, rand); break; //!!!
+        case MazeAlgorithm::HuntAndKill: HuntKill::use(*grid, rand); break;
     }
 
     solveMaze();
-    //std::cout << *grid << std::endl;
+    std::cout << *grid << std::endl;
 }
 
 void Maze::solveMaze()

@@ -60,10 +60,8 @@ class Grid
 
     Cell& getRandomCell()
     {
-        int x = rand.nextInt(width - 1);
-        int y = rand.nextInt(height - 1);
-        int index = y * width + x;
-        return cells[index];
+        int x = rand.nextInt(size() - 1);
+        return cells[x];
     }
 
     int size() const
