@@ -169,7 +169,6 @@
     <ClInclude Include="src\randomizer.h" />
     <ClInclude Include="src\recursivebacktracker.h" />
     <ClInclude Include="src\sidewinder.h" />
-    <ClInclude Include="src\wilson.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
