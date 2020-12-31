@@ -10,6 +10,8 @@
 #include "recursivebacktracker.h"
 #include "trueprims.h"
 #include "growingtree.h"
+#include "eller.h"
+#include "recursivedivision.h"
 
 enum class MazeAlgorithm
 {
@@ -20,6 +22,8 @@ enum class MazeAlgorithm
     RecursiveBacktracker,
     TruePrims,
     GrowingTree,
+    RecursiveDivision,
+    Eller,
     COUNT
 };
 
@@ -298,6 +302,8 @@ bool Maze::OnUserUpdate(float fElapsedTime)
         case MazeAlgorithm::RecursiveBacktracker: DrawString({ 10,10 }, "RecursiveBacktracker", olc::WHITE, 2); break;
         case MazeAlgorithm::TruePrims: DrawString({ 10,10 }, "TruePrims", olc::WHITE, 2); break;
         case MazeAlgorithm::GrowingTree: DrawString({ 10,10 }, "GrowingTree", olc::WHITE, 2); break;
+        case MazeAlgorithm::RecursiveDivision: DrawString({ 10,10 }, "RecursiveDivision", olc::WHITE, 2); break;
+        case MazeAlgorithm::Eller: DrawString({ 10,10 }, "Eller", olc::WHITE, 2); break;
     }
  
     int deadends = static_cast<int>(grid->deadends().size());
@@ -337,6 +343,8 @@ void Maze::generateMaze()
                                                                   return active[randIndex];
                                                               }
                                                           }); break;
+        case MazeAlgorithm::Eller: Eller::use(*grid, rand); break;
+        case MazeAlgorithm::RecursiveDivision: RecursiveDivision::use(*grid, rand); break;
     }
 
     grid->braid(braidRatio);
