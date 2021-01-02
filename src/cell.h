@@ -28,6 +28,8 @@ class Cell
 
     void unlink(Cell* cell, bool bidirectional = true)
     {
+        if(cell == nullptr) return;
+
         const auto position = std::find(links.begin(), links.end(), cell);
 
         if(position != links.end())

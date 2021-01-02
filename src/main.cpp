@@ -50,6 +50,7 @@ class Maze : public olc::PixelGameEngine
     bool showOnlyPath = false;
     bool drawPolarGrid = false;
     float braidRatio = 0.0f;
+    const int gridSize = 16;
 };
 
 
@@ -320,7 +321,8 @@ bool Maze::OnUserUpdate(float fElapsedTime)
 
 void Maze::generateMaze()
 {
-    grid = std::make_unique<Grid>(16, 16, rand);
+    
+    grid = std::make_unique<Grid>(gridSize, gridSize, rand);
 
     switch(algorithm)
     {

@@ -39,6 +39,7 @@ class Randomizer
     std::uint32_t nextInt(int max, int min = 0) const
     {
         if(max == 0) return 0;
+
         assert(max > min);
 
         float val = nextNormFloat();
