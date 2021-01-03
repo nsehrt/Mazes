@@ -8,8 +8,8 @@ class Cell
 {
     public:
 
-    explicit Cell(int x, int y) : xPos(x), yPos(y),
-        n(nullptr), e(nullptr), s(nullptr), w(nullptr)
+    explicit Cell(int x, int y) : n(nullptr), e(nullptr), s(nullptr), w(nullptr), 
+        xPos(x), yPos(y)
     {
     }
 
@@ -28,7 +28,7 @@ class Cell
 
     void unlink(Cell* cell, bool bidirectional = true)
     {
-        if(cell == nullptr) return;
+        if(cell == nullptr) { return; }
 
         const auto position = std::find(links.begin(), links.end(), cell);
 
@@ -43,7 +43,7 @@ class Cell
         }
     }
 
-    const auto& getLinks() const
+    [[nodiscard]] const auto& getLinks() const
     {
         return links;
     }
@@ -53,19 +53,19 @@ class Cell
        return std::find(links.begin(), links.end(), cell) != links.end();
     }
 
-    std::pair<int, int> getPosition() const
+    [[nodiscard]]  std::pair<int, int> getPosition() const
     {
         return { xPos, yPos };
     }
 
-    std::vector<Cell*> getNeighbours() const
+    [[nodiscard]] std::vector<Cell*> getNeighbours() const
     {
         std::vector<Cell*> neighbours{};
 
-        if(n != nullptr) neighbours.push_back(n);
-        if(e != nullptr) neighbours.push_back(e);
-        if(s != nullptr) neighbours.push_back(s);
-        if(w != nullptr) neighbours.push_back(w);
+        if(n != nullptr) { neighbours.push_back(n) };
+        if(e != nullptr) { neighbours.push_back(e) };
+        if(s != nullptr) { neighbours.push_back(s) };
+        if(w != nullptr) { neighbours.push_back(w) };
 
         return neighbours;
     }

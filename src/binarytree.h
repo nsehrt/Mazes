@@ -22,12 +22,14 @@ namespace BinaryTree
                 neighbours.push_back(cell.e);
             }
 
-            if(neighbours.size() > 0)
+            if(!neighbours.empty())
             {
                 int index = rand.nextInt(static_cast<int>(neighbours.size()) - 1);
                 Cell* neighbour = neighbours[index];
                 if(neighbour != nullptr)
+                {
                     cell.link(neighbour);
+                }                   
             }
 
 

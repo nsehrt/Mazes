@@ -27,7 +27,7 @@ class Randomizer
     //delete copy assignment
     Randomizer& operator=(const Randomizer& other) = delete;
 
-    ~Randomizer() {}
+    ~Randomizer() = default;
 
     // return random int in range from-to
     std::uint32_t nextInt() const
@@ -38,13 +38,15 @@ class Randomizer
     //return uint between min (default 0, inclusive) and max (inclusive), kind of flawed
     std::uint32_t nextInt(int max, int min = 0) const
     {
-        if(max == 0) return 0;
+        if(max == 0) { return 0; }
 
         assert(max > min);
 
         float val = nextNormFloat();
-        if(val == 1.0f)
+        if(val == 1.0F)
+        {
             val -= m_Epsilon;
+        }    
         
         return static_cast<std::uint32_t>(val * (max-min+1)) + min;
     }
@@ -65,5 +67,5 @@ class Randomizer
     std::uint32_t m_From = 0;
     std::uint32_t m_To = 0;
     std::uint32_t m_Range = 0;
-    const float m_Epsilon = 0.0001f;
+    const float m_Epsilon = 0.0001F;
 };

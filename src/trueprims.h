@@ -6,6 +6,7 @@
 
 namespace TruePrims
 {
+    constexpr int MAXWEIGHT = 999;
 
     static void use(Grid& grid, Randomizer& rand)
     {
@@ -18,7 +19,7 @@ namespace TruePrims
         //assign random cost to cells
         for(auto& cell : grid.getCells())
         {
-            costs[&cell] = rand.nextInt(999);
+            costs[&cell] = rand.nextInt(TruePrims::MAXWEIGHT);
         }
 
         while(!active.empty())

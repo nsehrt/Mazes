@@ -116,9 +116,9 @@ class Grid
         return d;
     }
 
-    void braid(float p = 1.0f)
+    void braid(float p = 1.0F)
     {
-        if(p <= 0.0f) return;
+        if(p <= 0.0F) return;
 
         for(Cell* cell : deadends())
         {
@@ -192,7 +192,9 @@ class Grid
         std::string ret;
         ret.reserve(input.size() * n);
         while(n--)
+        {
             ret += input;
+        }
         return ret;
     }
 
